@@ -1,0 +1,43 @@
+.background {
+  background: #ffff;
+  padding: 30px;
+  justify-items: center;
+  margin-top: 30vh;
+}
+
+.info {
+  width: 300px;
+  h2 {
+    font-size: 30px;
+  }
+  form {
+    label {
+      font-size: 20px;
+    }
+    input {
+      padding: 10px;
+      margin-top: 7px;
+      font-size: 15px;
+      border: 2px #7868b2 solid;
+      border-radius: 30px;
+   
+    }
+
+    button {
+      border: #7868b2 2px solid;
+      background: none;
+      padding: 10px;
+      padding-inline: 30px;
+      border-radius: 30px;
+      margin-left: 25vh;
+      a {
+        text-decoration: none;
+        color: black;
+        font-size: 18px;
+        font-family: "Irish Grover", system-ui;
+        font-weight: 400;
+        font-style: normal;
+      }
+    }
+  }
+}

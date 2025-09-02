@@ -1,0 +1,21 @@
+.background{
+    background: #ffff;
+    padding: 30px;
+        justify-items: center;
+        margin-top: 30vh;
+
+}
+
+.info{
+
+       width: 260px;
+   h2{
+    font-size: 30px;
+       
+
+   }
+   h3{
+    font-size: 20px;
+      
+   }
+}
