@@ -33,11 +33,16 @@ const useFetch = () => {
     } finally {
       setIsLoading(false);
     }
+   
   };
+   
+      
 
   const get = {
     questions: () =>
-      handleRequest(`https://quiz-tpjgk.ondigitalocean.app/quiz`),
+      handleRequest(
+        `https://quiz-tpjgk.ondigitalocean.app/quiz`
+      ),
     question: (id) =>
       id
         ? handleRequest(`https://quiz-tpjgk.ondigitalocean.app/quiz/${id}`)

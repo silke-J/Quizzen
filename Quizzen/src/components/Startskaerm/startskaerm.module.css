@@ -7,6 +7,7 @@
 
 .info {
   width: 300px;
+  text-align: center;
   h2 {
     font-size: 30px;
   }
@@ -20,24 +21,28 @@
       font-size: 15px;
       border: 2px #7868b2 solid;
       border-radius: 30px;
-   
     }
 
     button {
-      border: #7868b2 2px solid;
+      
       background: none;
       padding: 10px;
+        background-color: #7868b2;
+        border: none;
       padding-inline: 30px;
       border-radius: 30px;
       margin-left: 25vh;
-      a {
+      position: relative;
+      z-index: 10;
+   
         text-decoration: none;
-        color: black;
+        color: white;
+        
         font-size: 18px;
-        font-family: "Irish Grover", system-ui;
+        
         font-weight: 400;
         font-style: normal;
-      }
+      
     }
   }
 }

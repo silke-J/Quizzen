@@ -2,32 +2,36 @@ import styles from "./startskaerm.module.css";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useFetchUser } from "../../hooks/useFetchUser";
-import { useNavigate } from "react-router-dom";
+
+import Quizskaerm from "../Quizskaerm/quizskaerm";
 
 const Startskærm = () => {
   const { createUser, isLoading, error } = useFetchUser();
   const [submittedResponse, setSubmittedResponse] = useState(null);
+  const [started, setStarted] = useState(false);
+  const [nameplay] = useState("");
 
-    const navigate = useNavigate;
+  const Submit = (e) => {
+    e.preventDefault();
+    console.log("Button clicked, name =", nameplay);
+    setStarted(true);
+  };
   const schema = yup.object({
     name: yup.string().required("Navn er påkrævet"),
   });
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
+    watch,
   } = useForm({ resolver: yupResolver(schema) });
 
-  useEffect(() => {
-    if (!isLoading && submittedResponse) {
-      toast.success(`Tak for din besked, ${submittedResponse.data.name}!`);
-    }
-  }, [isLoading, submittedResponse]);
+  const playername = watch("name", "");
 
   const onSubmit = async (data) => {
     const jsonData = {
@@ -39,28 +43,26 @@ const Startskærm = () => {
       console.log(response);
       if (response?.status === "ok") {
         setSubmittedResponse(response);
-           navigate("/Quiz");
+        setStarted(true);
       }
     } catch (error) {
       console.log(error);
-    } finally {
-      reset();
     }
   };
+
   if (isLoading) return <ClipLoader />;
+  if (started) return <Quizskaerm playername={playername} />;
 
   return (
     <section className={styles.background}>
       <div className={styles.info}>
         <h2>Velkomme til quizzen </h2>
-
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
           <div className={styles.form}>
-            <label htmlFor="name">Skive dit navn for at starte</label>
-
+            <label htmlFor="name">Skriv dit navn for at starte</label>
             <input
               className={styles.input}
-              type="name"
+              type="text"
               placeholder="Indtast navn"
               id="name"
               {...register("name", { required: true })}
@@ -68,10 +70,9 @@ const Startskærm = () => {
             />
             <p>{errors.name?.message}</p>
           </div>
-
-          <button type="submit">
-            <a>Start</a>
-          </button>
+          <div onClick={Submit} disabled={!playername?.trim()}>
+            <button type="submit">Start</button>
+          </div>
         </form>
       </div>
     </section>
