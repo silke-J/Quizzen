@@ -1,15 +1,27 @@
+import { useFetchCount } from "../../hooks/useFetchCount";
 import styles from "../Quizskaerm/quizskaerm.module.css";
 import { useState } from "react";
 
 const Question = ({ question, onAnswered }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  let correctCount = 0;
-  const handleAnswerClick = (answerId) => {
+  const { submitAnswer, error, isLoading } = useFetchCount();
+
+  const handleAnswerClick = async (answerId) => {
     if (selectedAnswer) return;
     setSelectedAnswer(answerId);
+    try {
+      const result = await submitAnswer(answerId);
+      if (result?.updatesUser) {
+        console.log(
+          "nyt antal korrekte svar",
+          result.updatedUser.correctAnswersCount
+        );
+      }
+    } catch (error) {
+      console.log("Fejl ved submitAnswer:", error);
+    }
     if (onAnswered) onAnswered();
   };
-
 
   return (
     <section>
@@ -26,20 +38,20 @@ const Question = ({ question, onAnswered }) => {
             let backgroundColor = "";
             if (selectedAnswer) {
               if (isSelected && isCorrect) {
+                let currentCount = parseInt(localStorage.getItem("userAnswersCount")) || 0;
+                localStorage.setItem("userAnswersCount", currentCount + 1);
                 backgroundColor = "green"; // valgt og rigtigt
-                correctCount++;
               } else if (isSelected && !isCorrect) {
                 backgroundColor = "red"; // valgt og forkert
               } else if (!isSelected && isCorrect) {
                 backgroundColor = "green"; // vis det rigtige svar
               }
-              console.log(correctCount);
             }
 
             return (
               <button
-                className={styles.btn}
                 onClick={() => handleAnswerClick(answer._id)}
+                className={styles.btn}
                 disabled={!!selectedAnswer}
                 style={{
                   cursor: selectedAnswer ? "default" : "pointer",

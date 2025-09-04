@@ -5,20 +5,13 @@ import * as yup from "yup";
 import { ClipLoader } from "react-spinners";
 import { useState } from "react";
 import { useFetchUser } from "../../hooks/useFetchUser";
-
-import Quizskaerm from "../Quizskaerm/quizskaerm";
+import { useNavigate } from "react-router-dom";
 
 const Startskærm = () => {
   const { createUser, isLoading, error } = useFetchUser();
-  const [submittedResponse, setSubmittedResponse] = useState(null);
-  const [started, setStarted] = useState(false);
-  const [nameplay] = useState("");
+  
+  const navigate = useNavigate();
 
-  const Submit = (e) => {
-    e.preventDefault();
-    console.log("Button clicked, name =", nameplay);
-    setStarted(true);
-  };
   const schema = yup.object({
     name: yup.string().required("Navn er påkrævet"),
   });
@@ -31,9 +24,8 @@ const Startskærm = () => {
     watch,
   } = useForm({ resolver: yupResolver(schema) });
 
-  const playername = watch("name", "");
-
   const onSubmit = async (data) => {
+    // e.preventDefault();
     const jsonData = {
       name: data.name,
     };
@@ -41,17 +33,19 @@ const Startskærm = () => {
     try {
       const response = await createUser(jsonData);
       console.log(response);
-      if (response?.status === "ok") {
-        setSubmittedResponse(response);
-        setStarted(true);
-      }
+         if (response?.status === "Oprettet") {
+    const user = response.data;
+    localStorage.setItem("userId", user._id);
+    localStorage.setItem("userName", user.name);
+    localStorage.setItem("userAnswersCount", user.userAnswersCount);
+           navigate("/quiz");
+         }
     } catch (error) {
       console.log(error);
     }
   };
 
   if (isLoading) return <ClipLoader />;
-  if (started) return <Quizskaerm playername={playername} />;
 
   return (
     <section className={styles.background}>
@@ -70,7 +64,7 @@ const Startskærm = () => {
             />
             <p>{errors.name?.message}</p>
           </div>
-          <div onClick={Submit} disabled={!playername?.trim()}>
+          <div>
             <button type="submit">Start</button>
           </div>
         </form>

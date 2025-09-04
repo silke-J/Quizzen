@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import useFetch from "../../hooks/useFetch";
+
 import Question from "../Question/question";
 import styles from "./quizskaerm.module.css";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
+import useFetch from "../../hooks/useFetch";
 
 const Quizskaerm = () => {
   const { get, error, isLoading } = useFetch();
@@ -14,6 +15,7 @@ const Quizskaerm = () => {
   const handleAnswered = () => {
     setAnsweredCount((prevCount) => prevCount + 1);
   };
+
 
   const handleGoNext = () => {
     navigate("/sluttet");
@@ -42,6 +44,7 @@ const Quizskaerm = () => {
           question={question}
           key={question._id}
           onAnswered={handleAnswered}
+          handleNext={handleGoNext}
         />
       ))}
 
