@@ -51,7 +51,7 @@ const Quizskaerm = () => {
       {answeredCount >= 2 && (
         <button id="next-btn" className={styles.nextBtn} onClick={handleGoNext}>
           Next
-        </button>
+        </button>  
       )}
     </section>
   );

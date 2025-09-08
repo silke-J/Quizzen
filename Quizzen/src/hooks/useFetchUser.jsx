@@ -1,19 +1,21 @@
 import { useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const useFetchUser = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+    const [name, setName] = useState("");
 
   //   create user
-  const createUser = async (userData) => {
+  const createUser = async (userData, e) => {
     setIsLoading(true);
 
     try {
       const response = await fetch(
-        "https://quiz-tpjgk.ondigitalocean.app/user",
+        "https://quiz-tpjgk.ondigitalocean.app/signin/user",
         {
           method: "POST",
-          headers: {
+          headers: { 
             "Content-Type": "application/json",
           },
           body: JSON.stringify(userData),
@@ -21,14 +23,17 @@ const useFetchUser = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Fejl ved oprettelse af user");
+        throw new Error("Failed to signIn");
       }
 
-      const result = await response.json();
-      return result;
-
    
+      if (!response?.name?.token) {
+        throw new Error("Token is missing");
+      }
 
+      setName(jwtDecode(response.name.token));
+      console.log(response);
+      return response;
     } catch (error) {
       console.log(error);
       setError(error);
@@ -37,7 +42,6 @@ const useFetchUser = () => {
         setIsLoading(false);
       }, 1000);
     }
-
   };
 
   return {

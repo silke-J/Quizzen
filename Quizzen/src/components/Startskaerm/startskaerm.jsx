@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 const Startskærm = () => {
   const { createUser, isLoading, error } = useFetchUser();
-  
+
   const navigate = useNavigate();
 
   const schema = yup.object({
@@ -25,7 +25,7 @@ const Startskærm = () => {
   } = useForm({ resolver: yupResolver(schema) });
 
   const onSubmit = async (data) => {
-    // e.preventDefault();
+    console.log("Form data:", data); // Tilføj denne linje
     const jsonData = {
       name: data.name,
     };
@@ -33,13 +33,10 @@ const Startskærm = () => {
     try {
       const response = await createUser(jsonData);
       console.log(response);
-         if (response?.status === "Oprettet") {
-    const user = response.data;
-    localStorage.setItem("userId", user._id);
-    localStorage.setItem("userName", user.name);
-    localStorage.setItem("userAnswersCount", user.userAnswersCount);
-           navigate("/quiz");
-         }
+      if (response?.status === "ok") {
+        const user = response.data;
+        navigate("/quiz");
+      }
     } catch (error) {
       console.log(error);
     }

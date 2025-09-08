@@ -7,10 +7,23 @@ const useFetchCount = () => {
   const submitAnswer = async (optionId) => {
     setIsLoading(true);
     setError(null);
+
     const userId = localStorage.getItem("userId");
+    if (!userId) {
+      setError("User ID mangler i localStorage");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!optionId) {
+      setError("Option ID mangler");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch(
-        `https://quiz-tpjgk.ondigitalocean.app/quiz/68b6bbbdbdc505969f25ff65/answer`,
+        "https://quiz-tpjgk.ondigitalocean.app/quiz/68b69fb8bdc505969f25ff2c/answer",
         {
           method: "POST",
           headers: {
@@ -19,13 +32,22 @@ const useFetchCount = () => {
           body: JSON.stringify({ userId, optionId }),
         }
       );
-      console.log(response.status, await response.text());
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! ${response.status}: ${text}`);
+      }
+
       const result = await response.json();
-   
+
+ 
+
       return result;
     } catch (err) {
-      setError(err);
-      return null;
+      setError(err.message);
+      console.error("Error submitting answer:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
