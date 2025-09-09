@@ -7,8 +7,8 @@ import { useState } from "react";
 import { useFetchUser } from "../../hooks/useFetchUser";
 import { useNavigate } from "react-router-dom";
 
-const Startskærm = () => {
-  const { createUser, isLoading, error } = useFetchUser();
+const Startskaerm = () => {
+  const { createUser, error, isLoading, successMsg } = useFetchUser();
 
   const navigate = useNavigate();
 
@@ -25,19 +25,8 @@ const Startskærm = () => {
   } = useForm({ resolver: yupResolver(schema) });
 
   const onSubmit = async (data) => {
-    try {
-      const response = await createUser({ name: data.name });
-      // Tjek om der er et token i svaret
-      if (response?.token) {
-        localStorage.setItem("token", response.token);
-        navigate("/quiz");
-      } else {
-        // evt. vis fejlbesked
-        console.log("Ingen token modtaget fra API");
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    await createUser({ name: data.name });
+    navigate("/quiz");
   };
 
   if (isLoading) return <ClipLoader />;
@@ -57,9 +46,13 @@ const Startskærm = () => {
               {...register("name", { required: true })}
               required
             />
-            <p>{errors.name?.message}</p>
+            <div className={styles.fejlbeskeder}>
+              <p>{errors.name?.message}</p>
+              {successMsg && <p className={styles.beskedName}>{successMsg}</p>}
+            </div>
           </div>
-          <div>
+
+          <div className={styles.knap}>
             <button type="submit">Start</button>
           </div>
         </form>
@@ -68,5 +61,4 @@ const Startskærm = () => {
   );
 };
 
-export default Startskærm;
-
+export default Startskaerm;

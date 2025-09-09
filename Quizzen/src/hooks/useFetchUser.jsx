@@ -5,86 +5,55 @@ const useFetchUser = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
 
-  //   create user
   const createUser = async (userData) => {
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(
-        "https://quiz-tpjgk.ondigitalocean.app/signin/user",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userData), // Skal matche API-krav
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to signIn");
-      }
-
-      const data = await response.json(); // <-- parse JSON
-
-      if (!data?.token) {
-        // <-- brug data.token eller data.name.token hvis det er strukturen
-        throw new Error("Token is missing");
-      }
-
-      setName(jwtDecode(data.token));
-      console.log(data);
-      return data;
-    } catch (error) {
-      console.log(error);
-      setError(error);
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1000);
-    }
-  };
-
-  // Fetch user data
-  const fetchUserData = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
       const response = await fetch(
-        "https://quiz-tpjgk.ondigitalocean.app/signin/user",
+        "https://quiz-tpjgk.ondigitalocean.app/user",
         {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData),
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch user data");
+        throw new Error(`Failed to sign in (${response.status})`);
       }
 
       const data = await response.json();
-      console.log(data); // Skal indeholde { token: "..." }
-      if (!data?.token) {
-        throw new Error("Token is missing");
+      console.log("API response:", data);
+
+      const token = data.token || data.accessToken || data?.user?.token;
+
+      if (!token) {
+        throw new Error("Token is missing in API response");
       }
-      localStorage.setItem("token", data.token);
-      console.log("User data:", data);
+
+      localStorage.setItem("token", token);
+
+      const decoded = jwtDecode(token);
+      setName(decoded.name || "Ukendt bruger");
+
+      setSuccessMsg(
+        "Bruger oprettet! Velkommen, " + (decoded.name || userData.name) + " 🎉"
+      );
+
       return data;
-    } catch (error) {
-      console.log(error);
-      setError(error);
+    } catch (err) {
+      console.error(err);
+      setError(err);
+      setSuccessMsg("Kunne ikke oprette bruger. Prøv et andet navn.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  return {
-    createUser,
-    fetchUserData,
-    error,
-    isLoading,
-  };
+  return { createUser, error, isLoading, name, successMsg };
 };
 
 export { useFetchUser };
