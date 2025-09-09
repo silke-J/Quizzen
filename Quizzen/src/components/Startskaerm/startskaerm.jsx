@@ -26,15 +26,13 @@ const Startskærm = () => {
 
   const onSubmit = async (data) => {
     console.log("Form data:", data); // Tilføj denne linje
-    const jsonData = {
-      name: data.name,
-    };
+    const jsonData = { name: data.name };
+    const response = await createUser(jsonData);
 
     try {
-      const response = await createUser(jsonData);
-      console.log(response);
       if (response?.status === "ok") {
         const user = response.data;
+        localStorage.setItem("token", data.token);
         navigate("/quiz");
       }
     } catch (error) {
@@ -71,3 +69,7 @@ const Startskærm = () => {
 };
 
 export default Startskærm;
+
+// fx i din useFetchUser:
+// const data = await response.json();
+// data.token indeholder nu token

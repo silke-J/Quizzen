@@ -1,7 +1,7 @@
 import { useFetchCount } from "../../hooks/useFetchCount";
 import styles from "../Quizskaerm/quizskaerm.module.css";
 import { useState } from "react";
-import  VMS from "../../../public/vms.jpg"
+import VMS from "../../../public/vms.jpg";
 
 const Question = ({ question, onAnswered }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -11,13 +11,9 @@ const Question = ({ question, onAnswered }) => {
     if (selectedAnswer) return;
     setSelectedAnswer(optionId);
     try {
-      const result = await submitAnswer(optionId);
-      if (result?.updatesUser) {
-        console.log(
-          "nyt antal korrekte svar",
-          result.updatedUser.correctAnswersCount
-        );
-      }
+      // Brug quizId fra spørgsmålet!
+      const result = await submitAnswer(question.quizId, optionId);
+      // ...evt. ekstra kode...
     } catch (error) {
       console.log("Fejl ved submitAnswer:", error);
     }
@@ -28,9 +24,7 @@ const Question = ({ question, onAnswered }) => {
     <section>
       <div className={styles.quiz} key={question._id}>
         <img src={VMS} alt="" />
-
         <h2 id="question">{question?.question}</h2>
-
         <div className={styles.buttons} id="answer-buttons">
           {question?.options.map((answer) => {
             const isSelected = selectedAnswer === answer._id;
@@ -42,11 +36,11 @@ const Question = ({ question, onAnswered }) => {
                 let currentCount =
                   parseInt(localStorage.getItem("userAnswersCount")) || 0;
                 localStorage.setItem("userAnswersCount", currentCount + 1);
-                backgroundColor = "green"; // valgt og rigtigt
+                backgroundColor = "green";
               } else if (isSelected && !isCorrect) {
-                backgroundColor = "red"; // valgt og forkert
+                backgroundColor = "red";
               } else if (!isSelected && isCorrect) {
-                backgroundColor = "green"; // vis det rigtige svar
+                backgroundColor = "green";
               }
             }
 
