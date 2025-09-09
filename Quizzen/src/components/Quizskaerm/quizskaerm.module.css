@@ -1,7 +1,7 @@
 .background {
   background: #ffff;
   justify-items: center;
-  margin-block: 3vh;
+  margin-block: 7vh;
   padding: 30px;
 
   text-align: center;
@@ -13,6 +13,7 @@
 
   .quiz {
     display: inline-block;
+   
   }
   h2 {
     font-size: 25px;
