@@ -25,15 +25,15 @@ const Startskærm = () => {
   } = useForm({ resolver: yupResolver(schema) });
 
   const onSubmit = async (data) => {
-    console.log("Form data:", data); // Tilføj denne linje
-    const jsonData = { name: data.name };
-    const response = await createUser(jsonData);
-
     try {
-      if (response?.status === "ok") {
-        const user = response.data;
-        localStorage.setItem("token", data.token);
+      const response = await createUser({ name: data.name });
+      // Tjek om der er et token i svaret
+      if (response?.token) {
+        localStorage.setItem("token", response.token);
         navigate("/quiz");
+      } else {
+        // evt. vis fejlbesked
+        console.log("Ingen token modtaget fra API");
       }
     } catch (error) {
       console.log(error);
@@ -70,6 +70,3 @@ const Startskærm = () => {
 
 export default Startskærm;
 
-// fx i din useFetchUser:
-// const data = await response.json();
-// data.token indeholder nu token
