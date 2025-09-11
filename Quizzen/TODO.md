@@ -1,0 +1,4 @@
+- [x] Update quizskaerm.jsx to use get.question(quizId) instead of get.questions(quizId)
+- [x] Modify useFetch.js to include authentication headers in GET requests when a token is present
+- [x] Fix useFetchUser.jsx to correctly set the Authorization header using the token string
+- [ ] Test the application to ensure API calls succeed

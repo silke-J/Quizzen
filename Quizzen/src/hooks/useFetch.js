@@ -1,29 +1,32 @@
 import { useState } from "react";
+import { fetchWithAuth } from "./useFetchUser";
 
 const useFetch = () => {
+  const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState(null);
 
   const handleRequest = async (url, options = {}) => {
     setIsLoading(true);
     setError(null);
+    setData(null);
 
-    if (
-      options.method &&
-      options.method.toLowerCase() !== "get" &&
-      !isAuthenticated
-    ) {
+    const method = (options.method || "GET").toLowerCase();
+    const token = window.localStorage.getItem("token");
+
+    // Reject non-GET requests if no token
+    if (method !== "get" && !token) {
       setError("User is not authenticated");
       setIsLoading(false);
       return;
     }
 
     try {
-      const response = await fetch(url, { ...options });
-      if (!response.ok) {
-        throw new Error(`Failed to ${options.method || "fetch"} resource`);
-      }
+      const response = await (token ? fetchWithAuth(url, options) : fetch(url, options));
+
+      if (!response.ok)
+        throw new Error(`Request failed with status ${response.status}`);
+
       const result = await response.json();
       setData(result);
       return result;
@@ -33,51 +36,46 @@ const useFetch = () => {
     } finally {
       setIsLoading(false);
     }
-   
-  };
-   
-      
-
-  const get = {
-    questions: () =>
-      handleRequest(
-        `https://quiz-tpjgk.ondigitalocean.app/quiz`
-      ),
-    question: (id) =>
-      id
-        ? handleRequest(`https://quiz-tpjgk.ondigitalocean.app/quiz/${id}`)
-        : setError("No id provided"),
-  };
-
-  const post = {
-    questions: (product) =>
-      handleRequest(`https://quiz-tpjgk.ondigitalocean.app/quiz`, {
-        method: "POST",
-        body: JSON.stringify(product),
-      }),
-  };
-
-  
-  const del = {
-    user: (id) =>
-      id
-        ? handleRequest(`https://quiz-tpjgk.ondigitalocean.app/user/${id}`, {
-            method: "DELETE",
-          })
-        : setError("No id provided"),
-
-    questions: (id) =>
-      id
-        ? handleRequest(`https://quiz-tpjgk.ondigitalocean.app/quiz/${id}`, {
-            method: "DELETE",
-          })
-        : setError("No id provided"),
   };
 
   return {
-    get,
-    post,
-    del,
+    get: {
+      questions: () =>
+        handleRequest("https://quiz-tpjgk.ondigitalocean.app/api/quiz"),
+      question: (id) => {
+        if (!id) throw new Error("No id provided");
+        return handleRequest(
+          `https://quiz-tpjgk.ondigitalocean.app/api/quiz/${id}`
+        );
+      },
+    },
+    post: {
+      questions: (payload) =>
+        handleRequest("https://quiz-tpjgk.ondigitalocean.app/api/quiz", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        }),
+    },
+    del: {
+      user: (id) => {
+        if (!id) throw new Error("No id provided");
+        return handleRequest(
+          `https://quiz-tpjgk.ondigitalocean.app/api/user/${id}`,
+          {
+            method: "DELETE",
+          }
+        );
+      },
+      questions: (id) => {
+        if (!id) throw new Error("No id provided");
+        return handleRequest(
+          `https://quiz-tpjgk.ondigitalocean.app/api/quiz/${id}`,
+          {
+            method: "DELETE",
+          }
+        );
+      },
+    },
     data,
     error,
     isLoading,

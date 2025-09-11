@@ -29,7 +29,7 @@ const Quizskaerm = () => {
         ];
         let allQuestions = [];
         for (const quizId of quizIds) {
-          const questionsData = await get.questions(quizId);
+          const questionsData = await get.question(quizId);
           if (questionsData.data && questionsData.data.length > 0) {
             allQuestions.push({ ...questionsData.data[0], quizId });
           }
